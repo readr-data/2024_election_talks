@@ -1,0 +1,32 @@
+---
+title: "R Notebook"
+---
+```{r}
+library(tidyr)
+
+```
+
+
+# 先將 .srt 檔案改名為 .csv
+```{r}
+# 檔案匯入 R 後，將「temp」改成你的檔名
+file<-temp
+file<-separate(file,"1",into=c("from","to"),sep="-->")
+file$text<-""
+for(q in 2:nrow(file)){
+  print(q)
+  file$text[q-1]<-ifelse(is.na(file$to[q])==TRUE,file$from[q],file$text[q-1])
+}
+file<-filter(file,grepl(",",file$from))
+file<-filter(file,is.na(to)==FALSE)
+file<-separate(file,"from",into=c("from",NA),sep=",")
+file<-separate(file,"to",into=c("to",NA),sep=",")
+file$segment<-1:nrow(file)
+file<-select(file,segment,from,to,text)
+```
+
+# 存檔改檔名，小心確認因為會覆蓋原本的
+```{r}
+fwrite(file,"kp12_raw.csv",row.names = FALSE)
+```
+
